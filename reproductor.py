@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import pygame
 import os
 
@@ -13,7 +14,16 @@ class MusicPlayer:
     self.track = StringVar()
     self.status = StringVar()
 
+    home = os.path.expanduser("~")
+
     allowed_extensions = ['.mp3', '.wav', '.ogg']
+    disallowed_extensions = ['.jpg', '.apk', '.pdf', '.png']
+    
+     # Agregar estilo para botones redondeados
+    style = ttk.Style()
+    style.configure('RoundedButton.TButton', borderwidth=0, relief="flat", background="#B0FC38", foreground="navyblue", font=("arial", 16, "bold"), padding=10, width=8, anchor="center")
+    style.map('RoundedButton.TButton', background=[('active', '#8F00FF')])
+
 
     trackframe = LabelFrame(self.root,text="Song Track",font=("arial",15,"bold"),bg="#8F00FF",fg="white",bd=5,relief=GROOVE)
     trackframe.place(x=0,y=0,width=600,height=100)
@@ -22,10 +32,22 @@ class MusicPlayer:
 
     buttonframe = LabelFrame(self.root,text="Control Panel",font=("arial",15,"bold"),bg="#8F00FF",fg="white",bd=5,relief=GROOVE)
     buttonframe.place(x=0,y=100,width=600,height=100)
-    playbtn = Button(buttonframe,text="PLAY",command=self.playsong,width=6,height=1,font=("arial",16,"bold"),fg="navyblue",bg="#B0FC38").grid(row=0,column=0,padx=10,pady=5)
-    playbtn = Button(buttonframe,text="PAUSE",command=self.pausesong,width=8,height=1,font=("arial",16,"bold"),fg="navyblue",bg="#B0FC38").grid(row=0,column=1,padx=10,pady=5)
-    playbtn = Button(buttonframe,text="UNPAUSE",command=self.unpausesong,width=10,height=1,font=("arial",16,"bold"),fg="navyblue",bg="#B0FC38").grid(row=0,column=2,padx=10,pady=5)
-    playbtn = Button(buttonframe,text="STOP",command=self.stopsong,width=6,height=1,font=("arial",16,"bold"),fg="navyblue",bg="#B0FC38").grid(row=0,column=3,padx=10,pady=5)
+
+    # Boton de play
+    playbtn = ttk.Button(buttonframe,text="PLAY",command=self.playsong, style='RoundedButton.TButton' )
+    playbtn.grid(row=0,column=0,padx=10,pady=5)
+
+    # Boton de pausa
+    playbtn = ttk.Button(buttonframe,text="PAUSE",command=self.pausesong,style='RoundedButton.TButton')
+    playbtn.grid(row=0,column=1,padx=10,pady=5)
+
+    # Boton de despausa
+    playbtn = ttk.Button(buttonframe,text="UNPAUSE",command=self.unpausesong, style='RoundedButton.TButton')
+    playbtn.grid(row=0,column=2,padx=10,pady=5)
+
+    #boton de pausa
+    playbtn = ttk.Button(buttonframe,text="STOP",command=self.stopsong,style="RoundedButton.TButton")
+    playbtn.grid(row=0,column=3,padx=10,pady=5)
 #    backbtn = Button(buttonframe,text="BACK",command=self.back_folder,width=6,height=1,font=("arial",16,"bold"),fg="white",bg="#B0FC38").grid(row=0,column=4,padx=10,pady=5)
 
 
@@ -37,20 +59,25 @@ class MusicPlayer:
     scroll_y.pack(side=RIGHT,fill=Y)
     scroll_y.config(command=self.playlist.yview)
     self.playlist.pack(fill=BOTH)
-    os.chdir("/sdcard")
+    os.chdir(home)
     songtracks = os.listdir()
-
+    
+    for track in songtracks:
+        ext = os.path.splitext(track)[1].lower()
+        if ext not in disallowed_extensions:
+            self.playlist.insert(END, track)
     
     for track in songtracks:
         if os.path.isdir(track):
-           continue
+           continue           
         ext = os.path.splitext(track)[1]
         if ext in allowed_extensions or ext[1:] in allowed_extensions:
             self.playlist.insert(END, track)
 
     for track in songtracks:
       self.playlist.insert(END,track)
-      self.playlist.bind("<Double-Button-1>", self.open_folder)
+    self.playlist.bind("<Double-Button-1>", self.open_folder)
+
     # if os.path.isdir(track) or os.path.splitext(track)[1] in allowed_extensions:
     #         self.playlist.insert(END, track)
     
